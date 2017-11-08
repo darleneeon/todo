@@ -2,6 +2,7 @@ package database
 
 import (
 	"encoding/binary"
+	"errors"
 	"log"
 
 	"github.com/boltdb/bolt"
@@ -10,7 +11,7 @@ import (
 func init() {
 	db, err := ConnectDB()
 	if err != nil {
-		log.Fatalf("Error while connecting to the database: %s\n", err)
+		log.Fatal(err)
 	}
 	defer db.Close()
 
@@ -25,7 +26,13 @@ func init() {
 
 // ConnectDB returns database connection.
 func ConnectDB() (*bolt.DB, error) {
-	return bolt.Open("todo.db", 0600, nil)
+	db, err := bolt.Open("todo.db", 0600, nil)
+	if err != nil {
+		err = errors.New("Connecting to the database: " + err.Error())
+		return nil, err
+	}
+
+	return db, nil
 }
 
 // itob returns an 8-byte big endian representation of v.

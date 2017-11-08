@@ -2,7 +2,7 @@ package database
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 
 	"github.com/boltdb/bolt"
 	"github.com/darleneeon/todo/model"
@@ -14,7 +14,7 @@ func GetTasks() ([]model.Task, error) {
 
 	db, err := ConnectDB()
 	if err != nil {
-		log.Fatalf("Error while connecting to the database: %s\n", err)
+		return []model.Task{}, err
 	}
 	defer db.Close()
 
@@ -31,6 +31,7 @@ func GetTasks() ([]model.Task, error) {
 			if err != nil {
 				return err
 			}
+
 			tasks = append(tasks, task)
 		}
 
@@ -46,6 +47,7 @@ func unmarshal(v []byte) (model.Task, error) {
 	var task model.Task
 
 	if err := json.Unmarshal(v, &task); err != nil {
+		err = errors.New("Unmarshalling tasks: " + err.Error())
 		return model.Task{}, err
 	}
 

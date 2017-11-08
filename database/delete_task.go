@@ -1,8 +1,6 @@
 package database
 
 import (
-	"log"
-
 	"github.com/boltdb/bolt"
 )
 
@@ -10,7 +8,7 @@ import (
 func DeleteTask(id int) error {
 	db, err := ConnectDB()
 	if err != nil {
-		log.Fatalf("Error while connecting to the database: %s\n", err)
+		return err
 	}
 	defer db.Close()
 

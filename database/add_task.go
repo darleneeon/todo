@@ -2,7 +2,7 @@ package database
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 
 	"github.com/boltdb/bolt"
 	"github.com/darleneeon/todo/model"
@@ -12,7 +12,7 @@ import (
 func AddTask(t *model.Task) error {
 	db, err := ConnectDB()
 	if err != nil {
-		log.Fatalf("Error while connecting to the database: %s\n", err)
+		return err
 	}
 	defer db.Close()
 
@@ -26,6 +26,7 @@ func AddTask(t *model.Task) error {
 		// Marshal task data into bytes
 		buf, err := json.Marshal(t)
 		if err != nil {
+			err = errors.New("Marshalling task: " + err.Error())
 			return err
 		}
 
